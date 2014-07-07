@@ -1,39 +1,19 @@
 package com.example.bindableadaptertest;
 
-import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.ami.fundapter.BindDictionary;
-import com.ami.fundapter.FunDapter;
-import com.ami.fundapter.extractors.StringExtractor;
-import com.ami.fundapter.interfaces.DynamicImageLoader;
-import com.ami.fundapter.interfaces.FunDapterFilter;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
+import com.peony.listadapter.BindDictionary;
+import com.peony.listadapter.ListAdapter;
+import com.peony.listadapter.extractors.StringExtractor;
+import com.peony.listadapter.interfaces.DynamicImageLoader;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends FragmentActivity {
-
     private ListView list;
-    private Typeface tfBold;
-    private TextView searchField;
-    private Button switchToExpandableBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,50 +22,20 @@ public class MainActivity extends FragmentActivity {
 
         initViews();
 
-        // load some custom font
-        tfBold = Typeface.createFromAsset(getAssets(), "arialbd.ttf");
-
-        // Parse the sample JSON data from the asset file
-        String path = "products.json";
-        Gson gson = new Gson();
-        Type listType = new TypeToken<List<Product>>() {
-        }.getType();
-
-        String rawJson = readFile(path);
-
-        ArrayList<Product> prodList = null;
-        try {
-            prodList = gson.fromJson(rawJson, listType);
-        } catch (Exception e) {
-            e.printStackTrace();
+        ArrayList<Product> prodList = new ArrayList<>();
+        for (int i = 0; i < 3; ++i) {
+            Product product = new Product();
+            product.title = "Title" + i;
+            product.description = "description " + i;
+            product.price = 20 + i;
+            prodList.add(product);
         }
-
         // Show our data
-        // initOldAdapter(prodList);
         initFunDapter(prodList);
-
     }
 
     private void initViews() {
         list = (ListView) findViewById(R.id.pager);
-        searchField = (TextView) findViewById(R.id.searchField);
-        switchToExpandableBtn = (Button) findViewById(R.id.switchToExpandableBtn);
-        switchToExpandableBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent expandable = new Intent();
-                expandable.setClass(MainActivity.this, MyExpandableActivity.class);
-                startActivity(expandable);
-            }
-        });
-    }
-
-    @SuppressWarnings("unused")
-    private void initOldAdapter(ArrayList<Product> prodList) {
-
-        // Create the adapter class and give it the data, font and an image
-        // loader implementation
-        list.setAdapter(new ProductListAdapter(this, prodList, tfBold, new MockImageLoader()));
     }
 
     /**
@@ -96,19 +46,15 @@ public class MainActivity extends FragmentActivity {
      */
     public void initFunDapter(ArrayList<Product> prodList) {
 
-        BindDictionary<Product> prodDict = buildDictionary(tfBold);
+        BindDictionary<Product> prodDict = buildDictionary();
 
         // Create our adapter giving it a product list, resource to inflate and
         // dictionary
-        FunDapter<Product> adapter =
-                new FunDapter<Product>(this, prodList, R.layout.product_list_item, prodDict);
+        ListAdapter<Product> adapter = new ListAdapter<>(this, prodList, R.layout.product_list_item, prodDict);
         list.setAdapter(adapter);
-
-        // initialize the textfilter for our list
-        initTextFilter(adapter);
     }
 
-    public static BindDictionary<Product> buildDictionary(Typeface tf) {
+    public static BindDictionary<Product> buildDictionary() {
         // create the binding dictionary
         BindDictionary<Product> prodDict = new BindDictionary<Product>();
         prodDict.addStringField(R.id.title, new StringExtractor<Product>() {
@@ -116,7 +62,7 @@ public class MainActivity extends FragmentActivity {
             public String getStringValue(Product item, int position) {
                 return item.title;
             }
-        }).typeface(tf).visibilityIfNull(View.GONE);
+        }).visibilityIfNull(View.GONE);
         prodDict.addStringField(R.id.description, new StringExtractor<Product>() {
 
             @Override
@@ -129,6 +75,11 @@ public class MainActivity extends FragmentActivity {
             @Override
             public String getStringValue(Product item, int position) {
                 return item.price + " $";
+            }
+        }).background(new StringExtractor<Product>() {
+            @Override
+            public String getStringValue(Product item, int position) {
+                return "#00ff00";
             }
         });
         prodDict.addDynamicImageField(R.id.image, new StringExtractor<Product>() {
@@ -146,68 +97,4 @@ public class MainActivity extends FragmentActivity {
         );
         return prodDict;
     }
-
-    private void initTextFilter(final FunDapter<Product> adapter) {
-
-        // init the filter in the adapter
-        adapter.initFilter(new FunDapterFilter<Product>() {
-            @Override
-            public List<Product> filter(String filterConstraint,
-                                             List<Product> originalList) {
-
-                ArrayList<Product> filtered = new ArrayList<Product>();
-
-                for (int i = 0; i < originalList.size(); i++) {
-                    Product product = originalList.get(i);
-                    if (product.title.startsWith(filterConstraint)) {
-                        filtered.add(product);
-                    }
-                }
-
-                return filtered;
-            }
-        });
-
-        searchField.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                // now we can use the regular ListView API for filtering:
-                adapter.getFilter().filter(arg0);
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable arg0) {
-
-            }
-        });
-    }
-
-    public String readFile(String filename) {
-        StringBuilder b = new StringBuilder();
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new InputStreamReader(getAssets().open(filename)));
-            String str;
-            while ((str = in.readLine()) != null) {
-                b.append(str);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        return b.toString();
-
-    }
-
 }

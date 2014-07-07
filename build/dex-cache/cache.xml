@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="F:\src\FunDapter\Sample\build\pre-dexed\debug\support-v4-19.0.1-5406e16ecb63bce433bdeb1f8cd1f718fc852c70.jar"
+        jar="C:\Users\wangying\AppData\Local\Android\android-studio\sdk\extras\android\m2repository\com\android\support\support-v4\19.0.1\support-v4-19.0.1.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="587da9a481ffd341d2fa091704489b89845ddacd"/>
+    <item
+        dex="F:\src\FunDapter\Sample\build\pre-dexed\debug\classes-0023018fa5b1a3e1d96bce4018f2ce9b956406c4.jar"
+        jar="F:\src\FunDapter\build\exploded-aar\FunDapter\library\unspecified\classes.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="2814900179646d7ff129db841b8554ffb2fcd09f"/>
+    <item
+        dex="F:\src\FunDapter\Sample\build\pre-dexed\debug\gson-2.2.4-a3b34aeafb4eef8466eb7878df98e40a355edad7.jar"
+        jar="C:\Users\wangying\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.2.4\a60a5e993c98c864010053cb901b7eab25306568\gson-2.2.4.jar"
+        jumboMode="false"
+        revision="19.0.3"
+        sha1="a60a5e993c98c864010053cb901b7eab25306568"/>
+
+</pre-dex-items>

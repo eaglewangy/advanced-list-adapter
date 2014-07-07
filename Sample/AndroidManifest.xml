@@ -5,7 +5,7 @@
     android:versionName="1.0">
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="17"/>
+        android:targetSdkVersion="19"/>
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission
@@ -30,10 +30,6 @@
                 <category
                     android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name="com.example.bindableadaptertest.MyExpandableActivity"
-            android:label="@string/title_activity_expandable_list">
         </activity>
     </application>
 </manifest>

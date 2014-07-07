@@ -2,7 +2,7 @@ package com.example.bindableadaptertest;
 
 import android.widget.ImageView;
 
-import com.ami.fundapter.interfaces.DynamicImageLoader;
+import com.peony.listadapter.interfaces.DynamicImageLoader;
 
 public class MockImageLoader implements DynamicImageLoader {
 
